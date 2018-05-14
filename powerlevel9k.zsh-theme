@@ -110,6 +110,7 @@ CURRENT_BG='NONE'
 # The latter three can be omitted,
 set_default last_left_element_index 1
 set_default POWERLEVEL9K_WHITESPACE_BETWEEN_LEFT_SEGMENTS " "
+#set_default POWERLEVEL9K_WHITESPACE_BETWEEN_LEFT_SEGMENTS "\e[49m "
 left_prompt_segment() {
   local current_index=$2
   # Check if the segment should be joined with the previous one
@@ -127,14 +128,15 @@ left_prompt_segment() {
   [[ -n $FG_COLOR_MODIFIER ]] && 4="$FG_COLOR_MODIFIER"
 
   local bg fg
-  [[ -n "$3" ]] && bg="%K{$3}" || bg="%k"
-  [[ -n "$4" ]] && fg="%F{$4}" || fg="%f"
+  [[ -n "$3" ]] && bg="%K{default}" || bg="%k"
+  [[ -n "$4" ]] && fg="%F{$3}" || fg="%f"
 
   if [[ $CURRENT_BG != 'NONE' ]] && ! isSameColor "$3" "$CURRENT_BG"; then
     echo -n "$bg%F{$CURRENT_BG}"
     if [[ $joined == false ]]; then
       # Middle segment
       echo -n "$(print_icon 'LEFT_SEGMENT_SEPARATOR')$POWERLEVEL9K_WHITESPACE_BETWEEN_LEFT_SEGMENTS"
+      #echo -n "\e[49m$(print_icon 'LEFT_SEGMENT_SEPARATOR')$POWERLEVEL9K_WHITESPACE_BETWEEN_LEFT_SEGMENTS"
     fi
   elif isSameColor "$CURRENT_BG" "$3"; then
     # Middle segment with same color as previous segment
@@ -158,7 +160,7 @@ left_prompt_segment() {
     if [[ -n "$visual_identifier" ]]; then
       # Allow users to overwrite the color for the visual identifier only.
       local visual_identifier_color_variable=POWERLEVEL9K_${(U)1#prompt_}_VISUAL_IDENTIFIER_COLOR
-      set_default $visual_identifier_color_variable $4
+      set_default $visual_identifier_color_variable $3
       visual_identifier="%F{${(P)visual_identifier_color_variable}%}$visual_identifier%f"
       # Add an whitespace if we print more than just the visual identifier
       [[ -n "$5" ]] && visual_identifier="$visual_identifier "
@@ -1031,7 +1033,7 @@ prompt_nodeenv() {
 
 # print a little OS icon
 prompt_os_icon() {
-  "$1_prompt_segment" "$0" "$2" "black" "255" "$OS_ICON"
+  "$1_prompt_segment" "$0" "$2" "255" "black" "$OS_ICON"
 }
 
 # print PHP version number

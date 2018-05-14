@@ -356,3 +356,6 @@ get_icon_names() {
     fi
   done
 }
+
+# Global overrride
+icons[LEFT_SEGMENT_SEPARATOR]=$'\uE0B1'              # 
